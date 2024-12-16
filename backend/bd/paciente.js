@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const pacienteSchema = new mongoose.Schema({
     cedula: Int16Array(10),
-    primer_nombre: String(80),
+    primer_nombre: String,
     segundo_nombre: String(80),
     primer_apellido: String(80),
     segundo_apellido: String(80),
