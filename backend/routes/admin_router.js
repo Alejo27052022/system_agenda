@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Admin = require("./../bd/admin")
 
+/* Método GET */
 router.get("", async (req, res) => {
     try {
         const adminData = await Admin.find();
@@ -11,6 +12,7 @@ router.get("", async (req, res) => {
     }
 });
 
+/* Método POST */
 router.post("", async (req, res) => {
     let model = req.body;
 
@@ -24,5 +26,29 @@ router.post("", async (req, res) => {
     admin.save();
     res.send(admin.toObject());
 })
+
+/* Método PUT */
+router.put("/:id", async (req, res) => {
+    try{
+        const id = req.params.id;
+        const model = req.body;
+
+        const updateAdmin = await Admin.findOneAndUpdate(
+            {_id: id},
+            model,
+            {new: true}
+        );
+
+        if (!updateAdmin) {
+            return res.status(404).json({ message: "Admin no encontrado"});
+        }
+
+        res.json({message: "Admin actualizado correctamente", data:updateAdmin});
+    }
+    catch (err) {
+        res.status(500).json({error: "Error al actualizar el administrador", details: err.message});
+    }
+})
+
 
 module.exports = router;
