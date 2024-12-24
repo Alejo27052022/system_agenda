@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Paciente = require("./../bd/paciente")
 
+/* Metodo GET */
+
 router.get("", async(req, res) => {
     try {
         const pacienteData = await Paciente.find();
@@ -12,6 +14,8 @@ router.get("", async(req, res) => {
         })
     }
 })
+
+/* Metodo POST */
 
 router.post("", async (req, res) => {
     let model = req.body;
@@ -36,5 +40,33 @@ router.post("", async (req, res) => {
     paciente.save();
     res.send(paciente.toObject());
 })
+
+/* Metodo PUT */
+router.put("/:cedula", async(req, res) => {
+    try {
+        const cedula = req.params.cedula;
+        const model = req.body;
+
+        const updatePaciente = await Paciente.findOneAndUpdate(
+            {cedula: cedula},
+            model, 
+            {new: true}
+        );
+        
+        if (!updatePaciente){
+            return res.status(404).json({ message: "Paciente no encontrado"});
+        }
+
+        res.json({message: "Paciente actualizado correctamente", data: updatePaciente});
+    }
+    catch (err) {
+        res.status(500).json({ error: "Error al actualizar el paciente", details: err.message });
+    }
+})
+
+
+/* Método DELETE */
+
+
 
 module.exports = router;

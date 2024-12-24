@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 const administradorRouter = require("./routes/admin_router");
 const pacienteRouter = require("./routes/paciente_router");
+const medicoRouter = require("./routes/medico_router");
 
 app.use(express.json());
 app.get("/", function (req, res) {
@@ -12,6 +13,7 @@ app.get("/", function (req, res) {
 
 app.use("/Admin", administradorRouter);
 app.use("/Paciente", pacienteRouter);
+app.use("/Medico", medicoRouter);
 
 async function connection() {
     try {
