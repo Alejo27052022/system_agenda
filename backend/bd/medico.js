@@ -11,6 +11,15 @@ const medicoSchema = new mongoose.Schema({
             message: props => `${props.value} no es una cédula válida. Debe contener exactamente 10 dígitos.`
         }
     },
+    num_unico_medico: {
+        type: String,
+        required: true,
+        uniqued: true
+    },
+    estado_licencia: {
+        type: String,
+        required: true
+    },
     primer_nombre: {
         type: String,
         required: true,
@@ -48,10 +57,12 @@ const medicoSchema = new mongoose.Schema({
         }
     },
     especialidad: {
-        type: String,
+        type: Array,
         required: true
     },
 })
+
+medicoSchema.index({ cedula_medico: 1}, { unique: true});
 
 const Medico = mongoose.model("medico", medicoSchema)
 module.exports = Medico

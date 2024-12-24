@@ -4,7 +4,7 @@ const pacienteSchema = new mongoose.Schema({
     cedula: {
         type: String,
         required: [true, "La cédula es obligatoria."],
-        unique: true, // Se asegura de que no haya duplicados
+        unique: true, 
         validate: {
             validator: function (v) {
                 return /^\d{10}$/.test(v); // Exactamente 10 dígitos numéricos
@@ -14,38 +14,42 @@ const pacienteSchema = new mongoose.Schema({
     },
     primer_nombre: {
         type: String,
-        required: [true, "El primer nombre es obligatorio."],
-        maxlength: [80, "El primer nombre no debe exceder 80 caracteres."]
+        required: true,
+        maxlength: 80,
     },
     segundo_nombre: {
         type: String,
-        maxlength: [80, "El segundo nombre no debe exceder 80 caracteres."]
+        required: true,
+        maxlength: 80
     },
     primer_apellido: {
         type: String,
-        required: [true, "El primer apellido es obligatorio."],
-        maxlength: [80, "El primer apellido no debe exceder 80 caracteres."]
+        required: true, 
+        maxlength: 80
     },
     segundo_apellido: {
         type: String,
-        maxlength: [80, "El segundo apellido no debe exceder 80 caracteres."]
+        required: true,
+        maxlength: 80
     },
     correo: {
         type: String,
-        required: [true, "El correo electrónico es obligatorio."],
-        match: [/^\S+@\S+\.\S+$/, "El correo no es válido."]
+        required: true,
+        match: /^\S+@\S+\.\S+$/
     },
     sexo: {
         type: String,
-        required: [true, "El sexo es obligatorio."]
+        required: true,
+        enum: ['Masculino', 'Femenino', 'Otro'] 
     },
     raza: {
         type: String,
-        required: [true, "La raza es obligatoria."]
+        required: true,
+        enum: ['Mestizo', 'Montubio', 'Afroecuatoriano', 'Indígena', 'Blanco']
     },
     telefono: {
         type: String,
-        required: [true, "El teléfono es obligatorio."],
+        required: true, 
         validate: {
             validator: function (v) {
                 return /^\d{10}$/.test(v);
@@ -53,22 +57,32 @@ const pacienteSchema = new mongoose.Schema({
             message: props => `${props.value} no es un número de teléfono válido. Debe contener exactamente 10 dígitos.`
         }
     },
+    contacto_emergencia: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v){
+                return /^\d{10}$/.test(v);
+            },
+            message: props => `${props.value} no es un número de teléfono válido. Debe contener exactamente 10 dígitos`
+        }
+    },
     direccion: {
         type: String,
-        required: [true, "La dirección es obligatoria."]
+        required: true,
     },
     fecha_nacimiento: {
         type: Date,
-        required: [true, "La fecha de nacimiento es obligatoria."]
+        required: true
     },
     ocupacion: String,
     enfermedad_herencia: {
-        type: String,
-        required: [true, "La enfermedad hereditaria es obligatoria."]
+        type: Array,
+        required: true
     },
     alergia: {
-        type: String,
-        required: [true, "Las alergias son obligatorias."]
+        type: Array,
+        required: true
     },
     antecedentes: String
 });
@@ -76,6 +90,6 @@ const pacienteSchema = new mongoose.Schema({
 // Configura la cédula como clave primaria
 pacienteSchema.index({ cedula: 1 }, { unique: true });
 
-const Paciente = mongoose.model("Paciente", pacienteSchema);
+const Paciente = mongoose.model("paciente", pacienteSchema);
 
 module.exports = Paciente;
