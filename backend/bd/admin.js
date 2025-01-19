@@ -18,12 +18,12 @@ const adminSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 8, 
+        minlength: 8,
         validate: {
             validator: function (v) {
-                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v);
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/.test(v);
             },
-            message: props => `La contraseña no es válida. Debe contener al menos una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&), con mínimo 8 caracteres.`
+            message: props => `La contraseña no es válida. Debe contener al menos una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&.), con mínimo 8 caracteres.`
         }
     },
     telefono: {
