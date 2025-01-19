@@ -1,6 +1,20 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const express = require("express");
 const router = express.Router();
 const Medico = require("./../bd/medico")
+const verifyToken = require("../authMiddleware")
+
+/* Ruta protegida */
+router.get('/protected', verifyToken, (req,res) => {
+    res.json({
+        message: 'Ruta protegida accedida con éxito',
+        user: req.user
+    })
+})
+
+/* SECRET KEY PARA JWT */
+const JWT_SECRET = "pato123"
 
 /* Método GET */
 router.get("", async(req, res) => {
@@ -9,27 +23,84 @@ router.get("", async(req, res) => {
         res.json(medicoData);
     } catch (error) {
         res.status(500).json({
-            error: "Error al obtener los datos del medico"
+            error: "Error al obtener los medicos"
         })
     }
 })
 
 /* Método POST*/
 router.post("", async(req, res) => {
-    let model = req.body;
+    const { cedula_medico, num_unico_medico, estado_licencia, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, correo, password, especialidad} = req.body;
+    try {
+        console.log("Datos recibidos para registro", req.body);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-    let medico = new Medico({
-        cedula_medico: model.cedula_medico,
-        primer_nombre: model.primer_nombre,
-        segundo_nombre: model.segundo_nombre,
-        primer_apellido: model.primer_apellido,
-        segundo_apellido: model.segundo_apellido,
-        correo: model.correo,
-        password: model.password,
-        especialidad: model.especialidad
-    })
-    medico.save();
-    res.send(medico.toObject());
+        const medico = new Medico({
+            cedula_medico,
+            num_unico_medico,
+            estado_licencia,
+            primer_nombre,
+            segundo_nombre,
+            primer_apellido,
+            segundo_apellido,
+            correo,
+            password: hashedPassword,
+            especialidad
+        });
+
+        console.log("Datos procesados para guardar", medico);
+        await medico.save();
+        res.json(medico.toObject());
+
+    } catch (error){
+        console.error("Error al guardar el médico", error);
+        res.status(500).json({
+            error: "Error al guardar el médico"
+        })
+    }
+
+})
+
+/* Método POST para Login */
+router.post("/login", async (req, res) => {
+    const {correo, password} = req.body;
+    try {
+        console.log("Intento de login con correo: ", correo);
+        const medico = await Medico.findOne({correo});
+        if (!medico) {
+            console.log("Medico no encontrado para el correo: ", correo)
+            return res.status(404).json({
+                message: "Médico no encontrado"
+            })
+        }
+
+        console.log("Validando contraseña para usuario: ", medico.correo);
+        const isPasswordValid = await bcrypt.compare(password, medico.password);
+        if (!isPasswordValid) {
+            console.log("Contraseña incorrecta para médico: ", medico.correo);
+            return res.status(401).json({
+                message: "Contraseña incorrecta"
+            });
+        }
+        
+        const token = jwt.sign({
+            cedula_medico: medico.cedula_medico,
+            correo: medico.correo },
+            JWT_SECRET, {
+                expiresIn: "1h"
+            }
+        );
+        res.json({
+            message: "Login Exitoso", token, name: medico.primer_nombre + " " + medico.primer_apellido
+        })
+
+    } catch (error) {
+        console.error("Error en el servidor durante login: ", error);
+        res.status(500).json({
+            error: "Error en el servidor",
+            details: error.message
+        })
+    }
 })
 
 /* Método PUT*/
