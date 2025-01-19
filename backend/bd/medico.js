@@ -51,7 +51,7 @@ const medicoSchema = new mongoose.Schema({
         minlength: 8, // Longitud mínima
         validate: {
             validator: function (v) {
-                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v);
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/.test(v);
             },
             message: props => `La contraseña no es válida. Debe contener al menos una mayúscula, una minúscula, un número y un carácter especial (@$!%*?&), con mínimo 8 caracteres.`
         }

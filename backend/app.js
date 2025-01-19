@@ -1,14 +1,23 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors"); // Importa cors
 const app = express();
 const port = 3000;
 const administradorRouter = require("./routes/admin_router");
 const pacienteRouter = require("./routes/paciente_router");
 const medicoRouter = require("./routes/medico_router");
 
+// Configurar CORS
+app.use(cors({
+    origin: 'http://localhost:4200', // Permitir solo solicitudes desde el frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'] // Encabezados permitidos
+}));
+
 app.use(express.json());
+
 app.get("/", function (req, res) {
-    res.send("Server Running")
+    res.send("Server Running");
 });
 
 app.use("/Admin", administradorRouter);
@@ -28,7 +37,8 @@ async function connection() {
 
 connection();
 
-app.listen(port,()=>(
-    console.log("Server running on port" + port)
-))
+app.listen(port, () => {
+    console.log("Server running on port " + port);
+});
+
 
