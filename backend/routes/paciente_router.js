@@ -15,6 +15,23 @@ router.get("", async(req, res) => {
     }
 })
 
+/* Buscar paciente por cédula */
+router.get("/:cedula", async (req, res) => {
+    const cedula = req.params.cedula;
+  
+    try {
+      const paciente = await Paciente.findOne({ cedula });
+  
+      if (!paciente) {
+        return res.status(404).json({ message: "Paciente no encontrado" });
+      }
+  
+      res.json(paciente);
+    } catch (error) {
+      res.status(500).json({ error: "Error al buscar el paciente por cédula" });
+    }
+  });
+
 /* Metodo POST */
 
 router.post("", async (req, res) => {
@@ -30,6 +47,7 @@ router.post("", async (req, res) => {
         sexo: model.sexo,
         raza: model.raza,
         telefono: model.telefono,
+        contacto_emergencia: model.contacto_emergencia,
         direccion: model.direccion,
         fecha_nacimiento: model.fecha_nacimiento,
         ocupacion: model.ocupacion,

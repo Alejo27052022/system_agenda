@@ -28,24 +28,47 @@ router.get("", async(req, res) => {
     }
 })
 
+// Ruta protegida para obtener los datos del médico logueado
+router.get("/medicoLogueado", verifyToken, async (req, res) => {
+    try {
+        if (req.user.tipo !== 'medico') {
+            return res.status(403).json({ message: "Acceso denegado, solo médicos pueden acceder" });
+        }
+
+        res.json({
+            cedula_medico: req.user.cedula_medico,
+            primer_nombre: req.user.primer_nombre,
+            primer_apellido: req.user.primer_apellido,
+            correo: req.user.correo,
+            especialidad: req.user.especialidad,
+            image: req.user.image
+        });
+
+    } catch (error) {
+        console.error("Error al obtener los datos del médico", error);
+        res.status(500).json({ error: "Error al obtener los datos del médico" });
+    }
+});
+
+
+
 /* Método POST*/
 router.post("", async(req, res) => {
-    const { cedula_medico, num_unico_medico, estado_licencia, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, correo, password, especialidad} = req.body;
+    const { cedula_medico, num_unico_medico, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, correo, password, especialidad, image} = req.body;
     try {
         console.log("Datos recibidos para registro", req.body);
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         const medico = new Medico({
             cedula_medico,
             num_unico_medico,
-            estado_licencia,
             primer_nombre,
             segundo_nombre,
             primer_apellido,
             segundo_apellido,
             correo,
-            password: hashedPassword,
-            especialidad
+            password,
+            especialidad,
+            image
         });
 
         console.log("Datos procesados para guardar", medico);
@@ -63,18 +86,20 @@ router.post("", async(req, res) => {
 
 /* Método POST para Login */
 router.post("/login", async (req, res) => {
-    const {correo, password} = req.body;
+    const { correo, password } = req.body;
     try {
         console.log("Intento de login con correo: ", correo);
-        const medico = await Medico.findOne({correo});
+        const medico = await Medico.findOne({ correo });
         if (!medico) {
-            console.log("Medico no encontrado para el correo: ", correo)
+            console.log("Médico no encontrado para el correo: ", correo);
             return res.status(404).json({
                 message: "Médico no encontrado"
-            })
+            });
         }
 
         console.log("Validando contraseña para usuario: ", medico.correo);
+        console.log("🔑 Contraseña ingresada:", password);
+        console.log("🔒 Contraseña encriptada en BD:", medico.password);
         const isPasswordValid = await bcrypt.compare(password, medico.password);
         if (!isPasswordValid) {
             console.log("Contraseña incorrecta para médico: ", medico.correo);
@@ -83,25 +108,30 @@ router.post("/login", async (req, res) => {
             });
         }
         
+        // Generar el token incluyendo el rol
         const token = jwt.sign({
             cedula_medico: medico.cedula_medico,
-            correo: medico.correo },
-            JWT_SECRET, {
-                expiresIn: "1h"
-            }
-        );
+            correo: medico.correo,
+            rol: 'medico'
+        }, JWT_SECRET, {
+            expiresIn: "1h"
+        });
+
         res.json({
-            message: "Login Exitoso", token, name: medico.primer_nombre + " " + medico.primer_apellido
-        })
+            message: "Login Exitoso", 
+            token, 
+            name: medico.primer_nombre + " " + medico.primer_apellido
+        });
 
     } catch (error) {
         console.error("Error en el servidor durante login: ", error);
         res.status(500).json({
             error: "Error en el servidor",
             details: error.message
-        })
+        });
     }
-})
+});
+
 
 /* Método PUT*/
 router.put("/:cedula_medico", async(req, res) => {
