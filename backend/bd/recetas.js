@@ -8,8 +8,8 @@ const recetaSchema = new mongoose.Schema({
         type: Array,
         required: true
     },
+    type: String, 
     frecuencia: {
-        type: String, 
         required: true
     },
     tiempo: {

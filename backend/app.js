@@ -6,6 +6,11 @@ const port = 3000;
 const administradorRouter = require("./routes/admin_router");
 const pacienteRouter = require("./routes/paciente_router");
 const medicoRouter = require("./routes/medico_router");
+const medicamentoRouter = require("./routes/medicamentos_router");
+const tipoexamenesRouter = require("./routes/tipo_examen_router");
+const citaRouter = require("./routes/cita_router")
+const historiaRouter = require("./routes/historial_router")
+const examenRouter = require("./routes/examenes_router")
 
 // Configurar CORS
 app.use(cors({
@@ -21,6 +26,11 @@ app.get("/", function (req, res) {
 });
 
 app.use("/Admin", administradorRouter);
+app.use("/Admin/Medicamentos", medicamentoRouter);
+app.use("/Admin/TipoExamenes", tipoexamenesRouter);
+app.use("/Medico/Cita", citaRouter);
+app.use("/Medico/Historial", historiaRouter);
+app.use("/Medico/Examen", examenRouter);
 app.use("/Paciente", pacienteRouter);
 app.use("/Medico", medicoRouter);
 

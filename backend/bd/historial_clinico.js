@@ -8,15 +8,6 @@ const historialSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    sintomas_regionales:{
-        type: [String],
-        validate: {
-            validator: function(v){
-                return v.length > 0;
-            },
-            message: 'Debe incluir al menos un síntoma'
-        }
-    },
     signos_vitales: {
         frecuencia_cardiaca: {
             type: Number,
@@ -38,16 +29,10 @@ const historialSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        altura: {
+        estatura: {
             type: Number,
             required: true
         },
-        imc: {
-            type: Number,
-        },
-        pesoIdeal: {
-            type: Number,
-        }
     },
     examen_fisico_general: {
         type: String

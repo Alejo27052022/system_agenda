@@ -6,7 +6,6 @@ const examenesSchema = new mongoose.Schema({
     },
     resultado: {
         type: String,
-        required: true
     },
     descripcion: {
         type: String,

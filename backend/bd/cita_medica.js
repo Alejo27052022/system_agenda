@@ -14,20 +14,9 @@ const citamedicaSchema = new mongoose.Schema({
             message: props => `${props.value} no es un formato de hora válido (hh:mm).`
         }
     },
-    hora_finalizacion: {
-        type: String,
-        required: true,
-        validate: {
-            validator: function (v) {
-                return /^([01]\d|2[0-3]):([0-5]\d)$/.test(v); // Valida formato hh:mm
-            },
-            message: props => `${props.value} no es un formato de hora válido (hh:mm).`
-        }
-    },
     estado: {
         type: String,
-        required: true,
-        enum: ['Pendiente', 'Completada', 'Cancelada']
+        enum: ['Pendiente', 'Completada', 'Cancelada', 'En Curso']
     },
     motivo: {
         type: String,

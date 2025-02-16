@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const medicamentosSchema = new mongoose.Schema({
+    _id: { 
+        type: String,
+        required: true 
+    }, 
     nombre_medicamento: {
         type: String,
         required: true
@@ -23,8 +27,14 @@ const medicamentosSchema = new mongoose.Schema({
     },
     fabricante_medico: {
         type: String,
+    },
+    cantidad: {
+        type: Number,
+        required: true
     }
 })
+
+medicamentosSchema.index({ nombre_medicamento: 1, gramos: 1 }, { unique: true });
 
 const medicamentos = mongoose.model('Medicamentos', medicamentosSchema);
 module.exports = medicamentos
